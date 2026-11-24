@@ -5,6 +5,8 @@
 <p align="center"><b>Помнит всё, что вы копировали.</b><br>
 Бесплатно, для Mac с macOS 14 Sonoma и новее. Без аккаунтов и рекламы, в интернет ничего не отправляет.</p>
 
+<p align="center"><a href="https://eglibyte.ee/magpie.html">Страница программы</a> · <a href="https://eglibyte.ee/ru/magpie.html">на русском</a> · <a href="https://eglibyte.ee/en/magpie.html">in English</a></p>
+
 ![Magpie открыт: панель с историей буфера обмена](docs/hero.png)
 
 ## Что это и зачем
@@ -75,8 +77,10 @@ curl -fsSL https://raw.githubusercontent.com/Egrom92/magpie/main/uninstall.sh | 
 
 ## Другие программы
 
-- [2pic](https://github.com/Egrom92/2pic) — скриншоты и видео с экрана
-- [Oops](https://github.com/Egrom92/oops) — исправляет текст, набранный не в той раскладке
-- [Peekaboo](https://github.com/Egrom92/peekaboo) — прячет лишние значки в строке меню
+- [2pic](https://eglibyte.ee/ru/2pic.html) — скриншоты и видео с экрана
+- [Oops](https://eglibyte.ee/ru/oops.html) — исправляет текст, набранный не в той раскладке
+- [Peekaboo](https://eglibyte.ee/ru/peekaboo.html) — прячет лишние значки в строке меню
+
+Все программы: [eglibyte.ee/ru/tools.html](https://eglibyte.ee/ru/tools.html)
 
 <sub>Бесплатно, лицензия [MIT](LICENSE).</sub>
