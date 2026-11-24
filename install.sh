@@ -1,23 +1,53 @@
 #!/bin/bash
-# Установка Magpie (история буфера обмена) в /Applications. Повторный запуск — обновление; история не трогается.
-#   ./install.sh
+# Установка или обновление Magpie одной командой (история при обновлении не трогается):
+#   curl -fsSL https://raw.githubusercontent.com/Egrom92/magpie/main/install.sh | bash
+# или из скачанной папки:  ./install.sh
 set -euo pipefail
-cd "$(dirname "$0")"
 
+REPO="Egrom92/magpie"
 say() { printf '\n\033[1m▶︎ %s\033[0m\n' "$*"; }
 die() { printf '\n❌ %s\n' "$*" >&2; exit 1; }
 
-[ "$(uname -s)" = Darwin ] || die "Нужен macOS."
-xcrun --find swiftc >/dev/null 2>&1 || { xcode-select --install 2>/dev/null || true; die "Нужны Command Line Tools: установите и запустите снова."; }
+[ "$(uname -s)" = Darwin ] || die "Magpie работает только на macOS."
+ver=$(sw_vers -productVersion)
+[ "${ver%%.*}" -ge 14 ] || die "Нужна macOS 14 Sonoma или новее (у вас $ver)."
 
-APP=/Applications/Magpie.app
+if ! xcode-select -p >/dev/null 2>&1 || ! xcrun --find swiftc >/dev/null 2>&1; then
+    say "Нужны бесплатные инструменты разработчика Apple (Command Line Tools)"
+    echo "Сейчас откроется окно установки: нажмите «Установить», дождитесь окончания"
+    echo "(5–15 минут) и запустите эту же команду ещё раз."
+    xcode-select --install 2>/dev/null || true
+    exit 1
+fi
+
+# Исходники: из этой папки или свежие с GitHub
+self="${BASH_SOURCE[0]:-}"
+if [ -n "$self" ] && [ -f "$(dirname "$self")/Sources/main.swift" ] && [ -f "$(dirname "$self")/Resources/AppIcon.icns" ]; then
+    cd "$(dirname "$self")"
+else
+    say "Скачиваю Magpie с GitHub"
+    TMP=$(mktemp -d "${TMPDIR:-/tmp}/magpie.XXXXXX")
+    trap 'rm -rf "$TMP"' EXIT
+    curl -fsSL "https://github.com/$REPO/archive/refs/heads/main.tar.gz" | tar -xz -C "$TMP" \
+        || die "Не удалось скачать https://github.com/$REPO. Проверьте интернет."
+    cd "$TMP/magpie-main"
+fi
+
+DEST=/Applications
+if [ ! -w "$DEST" ]; then
+    DEST="$HOME/Applications"   # у обычного (не администратора) пользователя нет прав на /Applications
+    mkdir -p "$DEST"
+fi
+APP="$DEST/Magpie.app"
 BUILD=build/Magpie.app
 arch=$(uname -m)
 
 say "Собираю Magpie (первый раз около минуты)"
 rm -rf build
 mkdir -p "$BUILD/Contents/MacOS" "$BUILD/Contents/Resources"
-swiftc -O -swift-version 5 -target "$arch-apple-macos14.0" -o "$BUILD/Contents/MacOS/Magpie" Sources/main.swift
+swiftc -O -swift-version 5 -target "$arch-apple-macos14.0" -o "$BUILD/Contents/MacOS/Magpie" Sources/main.swift \
+    || die "Сборка не удалась. Обновите Command Line Tools (Системные настройки → Основные → Обновление ПО) и попробуйте снова."
+cp Resources/AppIcon.icns "$BUILD/Contents/Resources/AppIcon.icns"
 
 cat > "$BUILD/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -27,6 +57,7 @@ cat > "$BUILD/Contents/Info.plist" <<'PLIST'
     <key>CFBundleName</key><string>Magpie</string>
     <key>CFBundleDisplayName</key><string>Magpie</string>
     <key>CFBundleExecutable</key><string>Magpie</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>1.0</string>
     <key>CFBundleVersion</key><string>1</string>
@@ -52,5 +83,6 @@ cat <<'DONE'
   • Кнопка ⧉ у записи (или щелчок по ней) кладёт её в буфер и закрывает панель.
   • Правый щелчок по записи — удалить из истории; по значку — очистить всё, автозапуск, выход.
   • История хранится 7 дней. Пароли из менеджеров паролей не сохраняются.
-Magpie сам запускается при входе в систему. Обновить — запустить ./install.sh ещё раз.
+Magpie сам запускается при входе в систему. Обновить — запустить эту же команду ещё раз.
+Удалить: curl -fsSL https://raw.githubusercontent.com/Egrom92/magpie/main/uninstall.sh | bash
 DONE

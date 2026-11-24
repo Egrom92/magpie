@@ -555,6 +555,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var loginItem: NSMenuItem!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if CommandLine.arguments.contains("--unregister-login") {   // нужно для uninstall.sh
+            try? SMAppService.mainApp.unregister()
+            NSApp.terminate(nil)
+            return
+        }
         _ = watcher
         setupEditMenu()
 
