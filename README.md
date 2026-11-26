@@ -80,6 +80,7 @@ curl -fsSL https://raw.githubusercontent.com/Egrom92/magpie/main/uninstall.sh | 
 - [2pic](https://eglibyte.ee/ru/2pic.html) — скриншоты и видео с экрана
 - [Oops](https://eglibyte.ee/ru/oops.html) — исправляет текст, набранный не в той раскладке
 - [Peekaboo](https://eglibyte.ee/ru/peekaboo.html) — прячет лишние значки в строке меню
+- [Lark](https://eglibyte.ee/ru/lark.html) — звук, микрофон и пауза для всего, что играет
 
 Все программы: [eglibyte.ee/ru/tools.html](https://eglibyte.ee/ru/tools.html)
 
